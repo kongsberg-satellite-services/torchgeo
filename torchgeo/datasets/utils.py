@@ -16,7 +16,7 @@ import sys
 import tarfile
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, cast, overload
 
 import numpy as np
@@ -502,6 +502,9 @@ def disambiguate_timestamp(date_str: str, format: str) -> tuple[float, float]:
         (mint, maxt) tuple for indexing
     """
     mint = datetime.strptime(date_str, format)
+    # If no timezone is specified, assume UTC
+    if mint.tzinfo is None:
+        mint = mint.replace(tzinfo=timezone.utc)
 
     # TODO: This doesn't correctly handle literal `%%` characters in format
     # TODO: May have issues with time zones, UTC vs. local time, and DST
